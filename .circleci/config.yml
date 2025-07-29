@@ -4,7 +4,7 @@ jobs:
   build:
     docker:
       - image: cimg/python:3.10
-    working_directory: /tmp
+    # working_directory: /home/circleci/project  # Optional, default is this
     steps:
       - checkout
 
@@ -15,13 +15,13 @@ jobs:
       - run:
           name: Creating Dummy Artifacts
           command: |
-            echo "my artifact file" > /tmp/art-1
-            mkdir -p /tmp/artifacts
-            echo "my artifact files in a dir" > /tmp/artifacts/art-2
+            echo "my artifact file" > art-1
+            mkdir -p artifacts
+            echo "my artifact files in a dir" > artifacts/art-2
 
       - store_artifacts:
-          path: /tmp/art-1
+          path: art-1
           destination: artifact-file
 
       - store_artifacts:
-          path: /tmp/artifacts
+          path: artifacts
