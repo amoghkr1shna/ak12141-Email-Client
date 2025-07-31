@@ -261,18 +261,10 @@ def create_identity_manager(
     return IdentityManager(oauth_handler, token_manager)
 
 
-    # Create identity manager
-identity_manager = create_identity_manager(
-    provider="gmail",
-    client_id="your_client_id",
-    client_secret="your_client_secret",
-    redirect_uri="http://localhost:8080/callback"
-)
-
-# # Get OAuth URL
-# auth_url = identity_manager.oauth_handler.get_authorization_url()
-# print(f"Visit: {auth_url}")
-
-# # Exchange code for token
-# token = identity_manager.oauth_handler.exchange_code_for_token(code, verifier)
-# identity_manager.store_token(token)
+# Example usage (commented out):
+# identity_manager = create_identity_manager(
+#     provider="gmail",
+#     client_id="your_client_id",
+#     client_secret="your_client_secret",
+#     redirect_uri="http://localhost:8080/callback"
+# )
