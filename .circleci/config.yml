@@ -1,27 +1,59 @@
 version: 2.1
 
-jobs:
-  build:
+executors:
+  python-executor:
     docker:
       - image: cimg/python:3.10
-    # working_directory: /home/circleci/project  # Optional, default is this
+
+jobs:
+  prereqs:
+    executor: python-executor
     steps:
       - checkout
-
+      
       - run:
-          name: Testing CircleCI Configuration
-          command: echo "Hello OSource"
-
-      - run:
-          name: Creating Dummy Artifacts
+          name: Install uv
           command: |
-            echo "my Artifact file" > art-1
-            mkdir -p artifacts
-            echo "my Artifact files in a directory" > artifacts/art-2
-
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+            echo 'export PATH="$HOME/.cargo/bin:$PATH"' >> $BASH_ENV
+      
+      - run:
+          name: Install dependencies with uv
+          command: uv sync --all-extras
+      
+      - run:
+          name: Run ruff format check
+          command: uv run ruff format --check .
+      
+      - run:
+          name: Run ruff lint
+          command: uv run ruff check .
+      
+      - run:
+          name: Run mypy
+          command: uv run mypy src/
+      
+      - run:
+          name: Run tests with coverage
+          command: |
+            uv run pytest --cov=src --cov-report=html --cov-report=xml --junitxml=test-results.xml
+      
+      - run:
+          name: Build documentation
+          command: uv run mkdocs build
+      
+      - store_test_results:
+          path: test-results.xml
+      
       - store_artifacts:
-          path: art-1
-          destination: artifact-file
-
+          path: htmlcov
+          destination: coverage-report
+      
       - store_artifacts:
-          path: artifacts
+          path: site
+          destination: docs
+
+workflows:
+  build-and-test:
+    jobs:
+      - prereqs
