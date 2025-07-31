@@ -8,7 +8,7 @@ import hashlib
 import secrets
 from typing import Dict, Any, Optional
 
-from "src\interface\src\interface\__init__.py" import (
+from ...interface.src.interface import (
     AuthStatus, TokenInfo, OAuthHandler, TokenManager,
     AuthenticationError
 )
