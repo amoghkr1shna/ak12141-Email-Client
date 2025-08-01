@@ -17,6 +17,7 @@ name = "ak12141-email-client"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "requests" },
     { name = "types-requests" },
 ]
 
@@ -39,8 +40,9 @@ requires-dist = [
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0.0" },
     { name = "pytest-mock", marker = "extra == 'dev'", specifier = ">=3.10.0" },
+    { name = "requests", specifier = ">=2.31.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.1.0" },
-    { name = "types-requests" },
+    { name = "types-requests", specifier = ">=2.31.0" },
 ]
 provides-extras = ["dev"]
 
@@ -322,6 +324,10 @@ provides-extras = ["dev"]
 name = "email-client-interface"
 version = "0.1.0"
 source = { editable = "src/interface" }
+dependencies = [
+    { name = "requests" },
+    { name = "types-requests" },
+]
 
 [package.optional-dependencies]
 dev = [
@@ -336,7 +342,9 @@ requires-dist = [
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.0.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0.0" },
+    { name = "requests", specifier = ">=2.31.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.1.0" },
+    { name = "types-requests", specifier = ">=2.31.0" },
 ]
 provides-extras = ["dev"]
 

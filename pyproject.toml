@@ -10,8 +10,10 @@ authors = [{name = "Student", email = "student@example.com"}]
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "types-requests"
+    "requests>=2.31.0",
+    "types-requests>=2.31.0"
 ]
+
 
 [tool.hatch.build.targets.wheel]
 packages = ["src"]
@@ -37,7 +39,10 @@ members = [
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "tests/*"]
+testpaths = [
+    "tests/e2e",
+    "tests/integration"
+]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
