@@ -42,13 +42,15 @@ class SimpleTokenManager(TokenManager):
 
         # Add 5-minute buffer before expiration
         buffer_time = 300  # 5 minutes in seconds
-        return time.time() >= (token.expires_at - buffer_time)
+        return bool(time.time() >= (token.expires_at - buffer_time))
 
 
 class GmailOAuthHandler(OAuthHandler):
     """Gmail OAuth handler implementation."""
 
-    def __init__(self, client_id: str, client_secret: str, redirect_uri: str) -> None:  # Add return type
+    def __init__(
+        self, client_id: str, client_secret: str, redirect_uri: str
+    ) -> None:  # Add return type
         self.client_id = client_id
         self.client_secret = client_secret
         self.redirect_uri = redirect_uri
@@ -134,7 +136,7 @@ class GmailOAuthHandler(OAuthHandler):
                 "https://gmail.googleapis.com/gmail/v1/users/me/profile",
                 headers=headers,
             )
-            return response.status_code == 200
+            return bool(response.status_code == 200)
         except Exception:
             return False
 
@@ -252,7 +254,9 @@ def create_token_manager() -> TokenManager:
     return SimpleTokenManager()
 
 
-def create_identity_manager(provider: str = "gmail", **oauth_kwargs: Any) -> IdentityManager:
+def create_identity_manager(
+    provider: str = "gmail", **oauth_kwargs: Any
+) -> IdentityManager:
     """Create identity manager with OAuth handler and token manager."""
     oauth_handler = create_oauth_handler(provider, **oauth_kwargs)
     token_manager = create_token_manager()
