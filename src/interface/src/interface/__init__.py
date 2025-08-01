@@ -4,11 +4,11 @@ Interface module defining protocols and contracts for the email client system.
 Flow: identity -> ingest -> message -> analyzer
 """
 
-from abc import abstractmethod
+from collections.abc import Iterator
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Dict, Any, Iterator, List, Optional, Protocol
+from typing import Any, Protocol
 
 # identity protocols
 
@@ -23,13 +23,13 @@ class AuthStatus(Enum):
 @dataclass
 class TokenInfo:
     access_token: str
-    refresh_token: Optional[str] = None
-    expires_at: Optional[int] = None
+    refresh_token: str | None = None
+    expires_at: int | None = None
     token_type: str = "Bearer"
 
 
 class OAuthHandler(Protocol):
-    def authenticate(self, credentials: Dict[str, Any]) -> AuthStatus: ...
+    def authenticate(self, credentials: dict[str, Any]) -> AuthStatus: ...
 
     def refresh_token(self, refresh_token: str) -> TokenInfo: ...
 
@@ -39,7 +39,7 @@ class OAuthHandler(Protocol):
 class TokenManager(Protocol):
     def store_token(self, token: TokenInfo) -> None: ...
 
-    def retrieve_token(self) -> Optional[TokenInfo]: ...
+    def retrieve_token(self) -> TokenInfo | None: ...
 
     def clear_token(self) -> None: ...
 
@@ -82,7 +82,7 @@ class Message(Protocol):
     def body(self) -> str: ...
 
     @property
-    def attachments(self) -> List[Attachment]: ...
+    def attachments(self) -> list[Attachment]: ...
 
     @property
     def is_read(self) -> bool: ...
@@ -99,17 +99,14 @@ class Ingestor(Protocol):
     """Protocol for ingesting emails from a mail backend."""
 
     def get_messages(
-        self, limit: Optional[int] = None, folder: str = "INBOX"
-    ) -> Iterator[Message]:
-        ...
+        self, limit: int | None = None, folder: str = "INBOX"
+    ) -> Iterator[Message]: ...
 
     def search_messages(
         self, query: str, folder: str = "INBOX"
-    ) -> Iterator[Message]:
-        ...
+    ) -> Iterator[Message]: ...
 
-    def get_folders(self) -> List[str]:
-        ...
+    def get_folders(self) -> list[str]: ...
 
 
 def get_ingestor() -> Ingestor:
@@ -124,13 +121,13 @@ def get_ingestor() -> Ingestor:
 
 class AnalysisResult(Protocol):
     @property
-    def sentiment(self) -> Optional[float]: ...
+    def sentiment(self) -> float | None: ...
 
     @property
-    def topics(self) -> List[str]: ...
+    def topics(self) -> list[str]: ...
 
     @property
-    def entities(self) -> List[str]: ...
+    def entities(self) -> list[str]: ...
 
     @property
     def summary(self) -> str: ...
@@ -139,15 +136,17 @@ class AnalysisResult(Protocol):
     def confidence(self) -> float: ...
 
     @property
-    def metadata(self) -> Dict[str, Any]: ...
+    def metadata(self) -> dict[str, Any]: ...
 
 
 class Analyzer(Protocol):
     def analyze(self, message: Message) -> AnalysisResult: ...
 
-    def analyze_conversation(self, messages: List[Message]) -> AnalysisResult: ...
+    def analyze_conversation(self, messages: list[Message]) -> AnalysisResult: ...
 
-    def get_insights(self, analysis_results: List[AnalysisResult]) -> Dict[str, Any]: ...
+    def get_insights(
+        self, analysis_results: list[AnalysisResult]
+    ) -> dict[str, Any]: ...
 
 
 # error classes
@@ -188,4 +187,3 @@ __all__ = [
     "AnalysisError",
     "ConnectionError",
 ]
-
