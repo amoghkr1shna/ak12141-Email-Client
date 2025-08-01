@@ -143,9 +143,7 @@ class LocalIngestor(Ingestor):
             except Exception as e:
                 raise ParsingError(f"Failed to parse message: {e}") from e
 
-    def search_messages(
-        self, query: str, folder: str = "INBOX"
-    ) -> Iterator[Message]:
+    def search_messages(self, query: str, folder: str = "INBOX") -> Iterator[Message]:
         for message in self.get_messages(folder=folder):
             if (
                 query.lower() in message.subject.lower()
