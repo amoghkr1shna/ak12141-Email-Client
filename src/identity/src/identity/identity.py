@@ -8,7 +8,7 @@ import secrets
 import time
 from typing import Any
 
-from interface.src.interface import (
+from interface import (  # Update import path
     AuthenticationError,
     AuthStatus,
     OAuthHandler,
@@ -20,7 +20,7 @@ from interface.src.interface import (
 class SimpleTokenManager(TokenManager):
     """Simple in-memory token manager."""
 
-    def __init__(self):
+    def __init__(self) -> None:  # Add return type
         self._current_token: TokenInfo | None = None
 
     def store_token(self, token: TokenInfo) -> None:
@@ -48,7 +48,7 @@ class SimpleTokenManager(TokenManager):
 class GmailOAuthHandler(OAuthHandler):
     """Gmail OAuth handler implementation."""
 
-    def __init__(self, client_id: str, client_secret: str, redirect_uri: str):
+    def __init__(self, client_id: str, client_secret: str, redirect_uri: str) -> None:  # Add return type
         self.client_id = client_id
         self.client_secret = client_secret
         self.redirect_uri = redirect_uri
@@ -130,15 +130,11 @@ class GmailOAuthHandler(OAuthHandler):
             import requests
 
             headers = {"Authorization": f"{token.token_type} {token.access_token}"}
-
-            # Test the token with Gmail API
             response = requests.get(
                 "https://gmail.googleapis.com/gmail/v1/users/me/profile",
                 headers=headers,
             )
-
             return response.status_code == 200
-
         except Exception:
             return False
 
@@ -243,7 +239,7 @@ class IdentityManager:
 
 
 # Factory functions
-def create_oauth_handler(provider: str = "gmail", **kwargs) -> OAuthHandler:
+def create_oauth_handler(provider: str = "gmail", **kwargs: Any) -> OAuthHandler:
     """Create OAuth handler for specified provider."""
     if provider.lower() == "gmail":
         return GmailOAuthHandler(**kwargs)
@@ -256,7 +252,7 @@ def create_token_manager() -> TokenManager:
     return SimpleTokenManager()
 
 
-def create_identity_manager(provider: str = "gmail", **oauth_kwargs) -> IdentityManager:
+def create_identity_manager(provider: str = "gmail", **oauth_kwargs: Any) -> IdentityManager:
     """Create identity manager with OAuth handler and token manager."""
     oauth_handler = create_oauth_handler(provider, **oauth_kwargs)
     token_manager = create_token_manager()
