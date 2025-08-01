@@ -1,6 +1,7 @@
 """
 Message implementation module.
 """
+
 from datetime import datetime
 from typing import Any
 
@@ -108,7 +109,7 @@ def create_message(
 ) -> Message:
     """Factory function to create a Message instance."""
     attachment_list: list[Attachment] = []
-    
+
     if attachments:
         for att in attachments:
             try:
@@ -120,7 +121,7 @@ def create_message(
                 attachment_list.append(attachment)
             except KeyError as e:
                 raise ParsingError(f"Invalid attachment data: missing {e}") from e
-    
+
     return SimpleMessage(
         msg_id=msg_id,
         from_addr=from_addr,
