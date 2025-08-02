@@ -11,7 +11,12 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "requests>=2.31.0",
-    "types-requests>=2.31.0"
+    "types-requests>=2.31.0",
+    "email-client-interface",
+    "email-client-identity", 
+    "email-client-ingest",
+    "email-client-message",
+    "email-client-analyzer",
 ]
 
 
@@ -29,6 +34,13 @@ dev = [
     "mkdocs-material>=9.0.0",
 ]
 
+[tool.uv.sources]
+email-client-interface = { workspace = true }
+email-client-identity = { workspace = true }
+email-client-ingest = { workspace = true }
+email-client-message = { workspace = true }
+email-client-analyzer = { workspace = true }
+
 [tool.uv.workspace]
 members = [
     "src/interface",
@@ -40,8 +52,9 @@ members = [
 
 [tool.pytest.ini_options]
 testpaths = [
-    "tests/e2e",
-    "tests/integration"
+    "src/*/tests",
+    "tests/integration",
+    "tests/e2e"
 ]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
@@ -70,4 +83,4 @@ python_version = "3.10"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
-exclude = ['src/.*/tests/.*']
+exclude = ['^src/.*/tests/.*$']

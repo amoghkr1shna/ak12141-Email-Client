@@ -9,7 +9,9 @@ description = "Email fetching and parsing for email client"
 authors = [{name = "Student", email = "student@example.com"}]
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "email-client-interface",
+]
 
 [project.optional-dependencies]
 dev = [
@@ -38,3 +40,6 @@ line-length = 88
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "B", "C4", "UP"]
 ignore = ["E501", "B008"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ingest"]

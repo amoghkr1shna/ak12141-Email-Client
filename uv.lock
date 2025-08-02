@@ -17,6 +17,11 @@ name = "ak12141-email-client"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "email-client-analyzer" },
+    { name = "email-client-identity" },
+    { name = "email-client-ingest" },
+    { name = "email-client-interface" },
+    { name = "email-client-message" },
     { name = "requests" },
     { name = "types-requests" },
 ]
@@ -34,6 +39,11 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "email-client-analyzer", editable = "src/analyzer" },
+    { name = "email-client-identity", editable = "src/identity" },
+    { name = "email-client-ingest", editable = "src/ingest" },
+    { name = "email-client-interface", editable = "src/interface" },
+    { name = "email-client-message", editable = "src/message" },
     { name = "mkdocs", marker = "extra == 'dev'", specifier = ">=1.5.0" },
     { name = "mkdocs-material", marker = "extra == 'dev'", specifier = ">=9.0.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.0.0" },
@@ -254,6 +264,9 @@ toml = [
 name = "email-client-analyzer"
 version = "0.1.0"
 source = { editable = "src/analyzer" }
+dependencies = [
+    { name = "email-client-interface" },
+]
 
 [package.optional-dependencies]
 dev = [
@@ -265,6 +278,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "email-client-interface", editable = "src/interface" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.0.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0.0" },
@@ -277,6 +291,7 @@ name = "email-client-identity"
 version = "0.1.0"
 source = { editable = "src/identity" }
 dependencies = [
+    { name = "email-client-interface" },
     { name = "requests" },
 ]
 
@@ -290,6 +305,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "email-client-interface", editable = "src/interface" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.0.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0.0" },
@@ -302,6 +318,9 @@ provides-extras = ["dev"]
 name = "email-client-ingest"
 version = "0.1.0"
 source = { editable = "src/ingest" }
+dependencies = [
+    { name = "email-client-interface" },
+]
 
 [package.optional-dependencies]
 dev = [
@@ -313,6 +332,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "email-client-interface", editable = "src/interface" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.0.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0.0" },
@@ -352,6 +372,9 @@ provides-extras = ["dev"]
 name = "email-client-message"
 version = "0.1.0"
 source = { editable = "src/message" }
+dependencies = [
+    { name = "email-client-interface" },
+]
 
 [package.optional-dependencies]
 dev = [
@@ -363,6 +386,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "email-client-interface", editable = "src/interface" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.0.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0.0" },

@@ -2,11 +2,10 @@ import email
 from datetime import datetime
 from email.message import Message as RawEmailMessage
 from pathlib import Path
-from typing import Iterator
-from unittest.mock import MagicMock, mock_open, patch
+from unittest.mock import patch
 
 import pytest
-from interface import Attachment, ConnectionError, Message, ParsingError
+from interface import ConnectionError
 
 from ingest import EmailAttachment, EmailMessage, LocalIngestor, get_ingestor
 
@@ -74,7 +73,9 @@ class TestEmailMessage:
         message.mark_as_unread()
         assert not message.is_read
 
-    def test_attachments(self, sample_email: RawEmailMessage, sample_attachment: RawEmailMessage) -> None:
+    def test_attachments(
+        self, sample_email: RawEmailMessage, sample_attachment: RawEmailMessage
+    ) -> None:
         sample_email.add_attachment(sample_attachment)
         message = EmailMessage(sample_email, "test_id")
         attachments = message.attachments
@@ -97,7 +98,9 @@ class TestLocalIngestor:
         """Create a LocalIngestor instance for testing."""
         return LocalIngestor(mail_dir)
 
-    def test_get_messages(self, ingestor: LocalIngestor, mail_dir: Path, sample_email: RawEmailMessage) -> None:
+    def test_get_messages(
+        self, ingestor: LocalIngestor, mail_dir: Path, sample_email: RawEmailMessage
+    ) -> None:
         # Create a test email file
         msg_path = mail_dir / "INBOX" / "test_msg.eml"
         msg_path.write_bytes(sample_email.as_bytes())
@@ -107,7 +110,9 @@ class TestLocalIngestor:
         assert isinstance(messages[0], EmailMessage)
         assert messages[0].subject == "Test Subject"
 
-    def test_search_messages(self, ingestor: LocalIngestor, mail_dir: Path, sample_email: RawEmailMessage) -> None:
+    def test_search_messages(
+        self, ingestor: LocalIngestor, mail_dir: Path, sample_email: RawEmailMessage
+    ) -> None:
         # Create a test email file
         msg_path = mail_dir / "INBOX" / "test_msg.eml"
         msg_path.write_bytes(sample_email.as_bytes())

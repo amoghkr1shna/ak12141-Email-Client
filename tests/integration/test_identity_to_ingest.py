@@ -5,8 +5,7 @@ Integration tests for identity and ingest modules.
 import tempfile
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import pytest
 from identity import (
@@ -28,7 +27,7 @@ class TestIdentityIngestIntegration:
         self.temp_dir = tempfile.mkdtemp()
         self.mail_dir = Path(self.temp_dir) / "mail"
         self.mail_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Create sample email file
         sample_email = """From: sender@example.com
 To: recipient@example.com
@@ -43,6 +42,7 @@ This is a test email body.
     def teardown_method(self):
         """Clean up test fixtures."""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_authenticated_ingest_flow(self):
@@ -51,7 +51,7 @@ This is a test email body.
         oauth_handler = GmailOAuthHandler(
             client_id="test_client",
             client_secret="test_secret",
-            redirect_uri="http://localhost:8080/callback"
+            redirect_uri="http://localhost:8080/callback",
         )
         token_manager = SimpleTokenManager()
         identity_manager = IdentityManager(oauth_handler, token_manager)
@@ -62,7 +62,7 @@ This is a test email body.
             refresh_token="mock_refresh_token",
             expires_at=datetime.now() + timedelta(hours=1),
             token_type="Bearer",
-            scope="https://www.googleapis.com/auth/gmail.readonly"
+            scope="https://www.googleapis.com/auth/gmail.readonly",
         )
 
         # Store the token
@@ -90,19 +90,18 @@ This is a test email body.
         oauth_handler = GmailOAuthHandler(
             client_id="invalid_client",
             client_secret="invalid_secret",
-            redirect_uri="http://localhost:8080/callback"
+            redirect_uri="http://localhost:8080/callback",
         )
         token_manager = SimpleTokenManager()
         identity_manager = IdentityManager(oauth_handler, token_manager)
 
         # Attempt authentication with invalid credentials
-        with patch.object(oauth_handler, 'authenticate') as mock_auth:
+        with patch.object(oauth_handler, "authenticate") as mock_auth:
             mock_auth.return_value = AuthStatus.FAILED
-            
-            auth_status = identity_manager.authenticate({
-                "username": "invalid@example.com",
-                "password": "invalid_password"
-            })
+
+            auth_status = identity_manager.authenticate(
+                {"username": "invalid@example.com", "password": "invalid_password"}
+            )
             assert auth_status == AuthStatus.FAILED
 
         # Verify no token is stored
@@ -113,7 +112,9 @@ This is a test email body.
         # before allowing access. Here we simulate this check.
         if stored_token is None:
             # Simulate authentication required error
-            with pytest.raises(Exception):  # This would be AuthenticationError in real implementation
+            with pytest.raises(
+                Exception
+            ):  # This would be AuthenticationError in real implementation
                 ingestor = LocalIngestor(self.mail_dir)
                 # In real implementation, ingestor would check auth before proceeding
                 raise Exception("Authentication required")
@@ -124,7 +125,7 @@ This is a test email body.
         oauth_handler = GmailOAuthHandler(
             client_id="test_client",
             client_secret="test_secret",
-            redirect_uri="http://localhost:8080/callback"
+            redirect_uri="http://localhost:8080/callback",
         )
         token_manager = SimpleTokenManager()
         identity_manager = IdentityManager(oauth_handler, token_manager)
@@ -135,7 +136,7 @@ This is a test email body.
             refresh_token="valid_refresh_token",
             expires_at=datetime.now() - timedelta(hours=1),  # Expired
             token_type="Bearer",
-            scope="https://www.googleapis.com/auth/gmail.readonly"
+            scope="https://www.googleapis.com/auth/gmail.readonly",
         )
 
         token_manager.store_token(expired_token)
@@ -146,10 +147,10 @@ This is a test email body.
             refresh_token="valid_refresh_token",
             expires_at=datetime.now() + timedelta(hours=1),
             token_type="Bearer",
-            scope="https://www.googleapis.com/auth/gmail.readonly"
+            scope="https://www.googleapis.com/auth/gmail.readonly",
         )
 
-        with patch.object(oauth_handler, 'refresh_token') as mock_refresh:
+        with patch.object(oauth_handler, "refresh_token") as mock_refresh:
             mock_refresh.return_value = new_token
 
             # Attempt to refresh the token
@@ -173,7 +174,7 @@ This is a test email body.
             provider="gmail",
             client_id="test_client",
             client_secret="test_secret",
-            redirect_uri="http://localhost:8080/callback"
+            redirect_uri="http://localhost:8080/callback",
         )
         assert isinstance(identity_manager, IdentityManager)
 
@@ -190,7 +191,7 @@ This is a test email body.
         oauth_handler = GmailOAuthHandler(
             client_id="test_client",
             client_secret="test_secret",
-            redirect_uri="http://localhost:8080/callback"
+            redirect_uri="http://localhost:8080/callback",
         )
         token_manager = SimpleTokenManager()
         identity_manager = IdentityManager(oauth_handler, token_manager)
@@ -201,7 +202,7 @@ This is a test email body.
             refresh_token="valid_refresh_token",
             expires_at=datetime.now() + timedelta(hours=1),
             token_type="Bearer",
-            scope="https://www.googleapis.com/auth/gmail.readonly"
+            scope="https://www.googleapis.com/auth/gmail.readonly",
         )
 
         token_manager.store_token(mock_token)
@@ -209,7 +210,7 @@ This is a test email body.
         # Test search functionality
         ingestor = LocalIngestor(self.mail_dir)
         search_results = list(ingestor.search_messages("test", folder="INBOX"))
-        
+
         # Verify search works with authentication
         assert isinstance(search_results, list)
 
@@ -224,7 +225,7 @@ This is a test email body.
             provider="gmail",
             client_id="test_client",
             client_secret="test_secret",
-            redirect_uri="http://localhost:8080/callback"
+            redirect_uri="http://localhost:8080/callback",
         )
 
         # Mock authentication
@@ -233,7 +234,7 @@ This is a test email body.
             refresh_token="valid_refresh_token",
             expires_at=datetime.now() + timedelta(hours=1),
             token_type="Bearer",
-            scope="https://www.googleapis.com/auth/gmail.readonly"
+            scope="https://www.googleapis.com/auth/gmail.readonly",
         )
 
         identity_manager._token_manager.store_token(mock_token)
@@ -241,7 +242,7 @@ This is a test email body.
         # Test folder access
         ingestor = LocalIngestor(self.mail_dir)
         folders = ingestor.get_folders()
-        
+
         assert "INBOX" in folders
         assert "Sent" in folders
         assert "Drafts" in folders

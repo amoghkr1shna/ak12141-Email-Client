@@ -5,10 +5,9 @@ Pipeline flow: Identity → Ingest → Message → Analyzer
 """
 
 import tempfile
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Any
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import pytest
 from analyzer import EmailAnalyzer
@@ -19,7 +18,7 @@ from identity import (
     create_identity_manager,
 )
 from ingest import LocalIngestor, get_ingestor
-from interface import AuthStatus, TokenInfo
+from interface import TokenInfo
 from message import create_message
 
 
@@ -32,15 +31,15 @@ class TestFullPipeline:
         self.temp_dir = tempfile.mkdtemp()
         self.mail_dir = Path(self.temp_dir) / "mail"
         self.mail_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Create email folders
         (self.mail_dir / "INBOX").mkdir(exist_ok=True)
         (self.mail_dir / "Sent").mkdir(exist_ok=True)
         (self.mail_dir / "Important").mkdir(exist_ok=True)
-        
+
         # Create sample email files
         self._create_sample_emails()
-        
+
         # Initialize pipeline components
         self.identity_manager = self._setup_identity_manager()
         self.ingestor = LocalIngestor(self.mail_dir)
@@ -49,6 +48,7 @@ class TestFullPipeline:
     def teardown_method(self):
         """Clean up test fixtures."""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def _setup_identity_manager(self) -> IdentityManager:
@@ -56,19 +56,19 @@ class TestFullPipeline:
         oauth_handler = GmailOAuthHandler(
             client_id="test_client_id",
             client_secret="test_client_secret",
-            redirect_uri="http://localhost:8080/callback"
+            redirect_uri="http://localhost:8080/callback",
         )
         token_manager = SimpleTokenManager()
-        
+
         # Create a valid token
         valid_token = TokenInfo(
             access_token="valid_access_token_12345",
             refresh_token="valid_refresh_token_67890",
             expires_at=datetime.now().timestamp() + 3600,  # Expires in 1 hour
             token_type="Bearer",
-            scope="https://www.googleapis.com/auth/gmail.readonly"
+            scope="https://www.googleapis.com/auth/gmail.readonly",
         )
-        
+
         token_manager.store_token(valid_token)
         return IdentityManager(oauth_handler, token_manager)
 
@@ -160,7 +160,9 @@ Please review the attached policy document and complete the required training by
 
 HR Department
 """
-        (self.mail_dir / "Important" / "announcement.eml").write_text(announcement_email)
+        (self.mail_dir / "Important" / "announcement.eml").write_text(
+            announcement_email
+        )
 
         # Sent email
         sent_email = """From: employee@company.com
@@ -201,11 +203,11 @@ Project Manager
         # Step 2: Ingest - Get messages from all folders
         all_messages = []
         folders = self.ingestor.get_folders()
-        
+
         for folder in folders:
             folder_messages = list(self.ingestor.get_messages(folder=folder))
             all_messages.extend(folder_messages)
-        
+
         assert len(all_messages) >= 5  # We created 5 test emails
         assert len(folders) >= 3  # INBOX, Sent, Important
 
@@ -224,10 +226,10 @@ Project Manager
                     {
                         "filename": att.filename,
                         "content_type": att.content_type,
-                        "content": att.get_content()
+                        "content": att.get_content(),
                     }
                     for att in ingested_msg.attachments
-                ]
+                ],
             )
             standardized_messages.append(standard_msg)
 
@@ -243,7 +245,7 @@ Project Manager
 
         # Step 5: Generate insights from all analyses
         insights = self.analyzer.get_insights(analysis_results)
-        
+
         # Verify insights
         assert "average_sentiment" in insights
         assert "common_topics" in insights
@@ -257,7 +259,9 @@ Project Manager
         assert self.identity_manager.is_authenticated()
 
         # Step 2: Search for specific emails
-        business_emails = list(self.ingestor.search_messages("quarterly", folder="INBOX"))
+        business_emails = list(
+            self.ingestor.search_messages("quarterly", folder="INBOX")
+        )
         tech_emails = list(self.ingestor.search_messages("deployment", folder="INBOX"))
         support_emails = list(self.ingestor.search_messages("resolved", folder="INBOX"))
 
@@ -276,7 +280,7 @@ Project Manager
                 to_addr="user@company.com",
                 date=datetime.now(),
                 subject=f"SUMMARY: {result.subject}",
-                body=f"Original from: {result.from_}\nOriginal date: {result.date}\nSummary: {result.body[:100]}..."
+                body=f"Original from: {result.from_}\nOriginal date: {result.date}\nSummary: {result.body[:100]}...",
             )
             search_summaries.append(summary)
 
@@ -288,7 +292,7 @@ Project Manager
 
         # Step 5: Generate search insights
         search_insights = self.analyzer.get_insights(summary_analyses)
-        
+
         assert search_insights["total_analyzed"] == len(search_summaries)
         assert isinstance(search_insights["average_sentiment"], float)
 
@@ -300,7 +304,7 @@ Project Manager
 
         # Step 2: Get related messages (simulate a conversation thread)
         all_messages = list(self.ingestor.get_messages(folder="INBOX"))
-        
+
         # Group messages by subject similarity (simple grouping)
         conversation_groups = {}
         for msg in all_messages:
@@ -323,7 +327,7 @@ Project Manager
                         to_addr=msg.to,
                         date=msg.date,
                         subject=msg.subject,
-                        body=msg.body
+                        body=msg.body,
                     )
                     std_messages.append(std_msg)
 
@@ -346,7 +350,7 @@ Project Manager
             refresh_token="valid_refresh_token",
             expires_at=datetime.now().timestamp() - 3600,  # Expired 1 hour ago
             token_type="Bearer",
-            scope="https://www.googleapis.com/auth/gmail.readonly"
+            scope="https://www.googleapis.com/auth/gmail.readonly",
         )
 
         self.identity_manager.token_manager.store_token(expired_token)
@@ -357,10 +361,12 @@ Project Manager
             refresh_token="valid_refresh_token",
             expires_at=datetime.now().timestamp() + 3600,  # Valid for 1 hour
             token_type="Bearer",
-            scope="https://www.googleapis.com/auth/gmail.readonly"
+            scope="https://www.googleapis.com/auth/gmail.readonly",
         )
 
-        with patch.object(self.identity_manager.oauth_handler, 'refresh_token') as mock_refresh:
+        with patch.object(
+            self.identity_manager.oauth_handler, "refresh_token"
+        ) as mock_refresh:
             mock_refresh.return_value = new_token
 
             # Step 3: Attempt to refresh token
@@ -397,7 +403,7 @@ Project Manager
                 date=datetime.now(),
                 subject="Test",
                 body="Test",
-                attachments=[{"filename": "test.txt"}]  # Missing required fields
+                attachments=[{"filename": "test.txt"}],  # Missing required fields
             )
 
         # Test 4: Empty analysis
@@ -411,7 +417,7 @@ Project Manager
             provider="gmail",
             client_id="factory_client",
             client_secret="factory_secret",
-            redirect_uri="http://localhost:8080/callback"
+            redirect_uri="http://localhost:8080/callback",
         )
 
         # Mock authentication
@@ -420,7 +426,7 @@ Project Manager
             refresh_token="factory_refresh",
             expires_at=datetime.now().timestamp() + 3600,
             token_type="Bearer",
-            scope="https://www.googleapis.com/auth/gmail.readonly"
+            scope="https://www.googleapis.com/auth/gmail.readonly",
         )
         factory_identity.store_token(mock_token)
 
@@ -431,7 +437,7 @@ Project Manager
 
         # Step 3: Process messages through complete pipeline
         pipeline_results = []
-        
+
         for folder in factory_ingestor.get_folders():
             for ingested_msg in factory_ingestor.get_messages(folder=folder, limit=2):
                 # Create standardized message
@@ -441,22 +447,24 @@ Project Manager
                     to_addr=ingested_msg.to,
                     date=ingested_msg.date,
                     subject=f"[FACTORY] {ingested_msg.subject}",
-                    body=ingested_msg.body
+                    body=ingested_msg.body,
                 )
-                
+
                 # Analyze message
                 analysis = self.analyzer.analyze(std_msg)
-                
-                pipeline_results.append({
-                    "original_message": ingested_msg,
-                    "standardized_message": std_msg,
-                    "analysis": analysis,
-                    "folder": folder
-                })
+
+                pipeline_results.append(
+                    {
+                        "original_message": ingested_msg,
+                        "standardized_message": std_msg,
+                        "analysis": analysis,
+                        "folder": folder,
+                    }
+                )
 
         # Verify pipeline results
         assert len(pipeline_results) > 0
-        
+
         for result in pipeline_results:
             assert result["standardized_message"].subject.startswith("[FACTORY]")
             assert result["analysis"].metadata["message_id"].startswith("factory_")
@@ -465,13 +473,13 @@ Project Manager
     def test_performance_pipeline(self):
         """Test pipeline performance with multiple messages."""
         import time
-        
+
         # Step 1: Record start time
         start_time = time.time()
-        
+
         # Step 2: Process all messages through pipeline
         processed_count = 0
-        
+
         for folder in self.ingestor.get_folders():
             for message in self.ingestor.get_messages(folder=folder):
                 # Convert and analyze
@@ -481,20 +489,22 @@ Project Manager
                     to_addr=message.to,
                     date=message.date,
                     subject=message.subject,
-                    body=message.body
+                    body=message.body,
                 )
-                
+
                 analysis = self.analyzer.analyze(std_msg)
                 processed_count += 1
-        
+
         # Step 3: Record end time
         end_time = time.time()
         processing_time = end_time - start_time
-        
+
         # Step 4: Verify performance
         assert processed_count > 0
         assert processing_time < 10.0  # Should complete within 10 seconds
-        
+
         # Calculate throughput
-        messages_per_second = processed_count / processing_time if processing_time > 0 else 0
+        messages_per_second = (
+            processed_count / processing_time if processing_time > 0 else 0
+        )
         assert messages_per_second > 0.1  # At least 0.1 messages per second

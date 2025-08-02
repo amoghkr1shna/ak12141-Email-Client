@@ -44,27 +44,27 @@ def oauth_handler() -> GmailOAuthHandler:
 class TestSimpleTokenManager:
     """Test cases for SimpleTokenManager."""
 
-    def test_store_and_retrieve_token(self, token_manager: SimpleTokenManager, token_info: TokenInfo) -> None:
+    def test_store_and_retrieve_token(
+        self, token_manager: SimpleTokenManager, token_info: TokenInfo
+    ) -> None:
         token_manager.store_token(token_info)
         retrieved_token = token_manager.retrieve_token()
         assert retrieved_token == token_info
 
-    def test_clear_token(self, token_manager: SimpleTokenManager, token_info: TokenInfo) -> None:
+    def test_clear_token(
+        self, token_manager: SimpleTokenManager, token_info: TokenInfo
+    ) -> None:
         token_manager.store_token(token_info)
         token_manager.clear_token()
         assert token_manager.retrieve_token() is None
 
     def test_is_token_expired(self, token_manager: SimpleTokenManager) -> None:
         expired_token = TokenInfo(
-            access_token="test",
-            expires_at=int(time.time()) - 3600
+            access_token="test", expires_at=int(time.time()) - 3600
         )
         assert token_manager.is_token_expired(expired_token) is True
 
-        valid_token = TokenInfo(
-            access_token="test",
-            expires_at=int(time.time()) + 3600
-        )
+        valid_token = TokenInfo(access_token="test", expires_at=int(time.time()) + 3600)
         assert token_manager.is_token_expired(valid_token) is False
 
 
@@ -83,7 +83,9 @@ class TestGmailOAuthHandler:
         assert "redirect_uri=http://localhost:8080/callback" in url
 
     @patch("requests.post")
-    def test_refresh_token(self, mock_post: MagicMock, oauth_handler: GmailOAuthHandler) -> None:
+    def test_refresh_token(
+        self, mock_post: MagicMock, oauth_handler: GmailOAuthHandler
+    ) -> None:
         mock_response = MagicMock()
         mock_response.json.return_value = {
             "access_token": "new_access_token",
@@ -101,16 +103,25 @@ class TestIdentityManager:
     """Test cases for IdentityManager."""
 
     @pytest.fixture
-    def identity_manager(self, oauth_handler: GmailOAuthHandler, token_manager: SimpleTokenManager) -> IdentityManager:
+    def identity_manager(
+        self, oauth_handler: GmailOAuthHandler, token_manager: SimpleTokenManager
+    ) -> IdentityManager:
         return IdentityManager(oauth_handler, token_manager)
 
-    def test_store_and_get_token(self, identity_manager: IdentityManager, token_info: TokenInfo) -> None:
+    def test_store_and_get_token(
+        self, identity_manager: IdentityManager, token_info: TokenInfo
+    ) -> None:
         identity_manager.store_token(token_info)
         stored_token = identity_manager.get_stored_token()
         assert stored_token == token_info
 
     @patch.object(GmailOAuthHandler, "validate_token")
-    def test_is_authenticated(self, mock_validate: MagicMock, identity_manager: IdentityManager, token_info: TokenInfo) -> None:
+    def test_is_authenticated(
+        self,
+        mock_validate: MagicMock,
+        identity_manager: IdentityManager,
+        token_info: TokenInfo,
+    ) -> None:
         mock_validate.return_value = True
         identity_manager.store_token(token_info)
         assert identity_manager.is_authenticated() is True
@@ -127,7 +138,7 @@ class TestFactoryFunctions:
             provider="gmail",
             client_id="test_id",
             client_secret="test_secret",
-            redirect_uri="test_uri"
+            redirect_uri="test_uri",
         )
         assert isinstance(handler, GmailOAuthHandler)
 
@@ -143,7 +154,7 @@ class TestFactoryFunctions:
             provider="gmail",
             client_id="test_id",
             client_secret="test_secret",
-            redirect_uri="test_uri"
+            redirect_uri="test_uri",
         )
         assert isinstance(manager, IdentityManager)
         assert isinstance(manager.oauth_handler, GmailOAuthHandler)

@@ -5,9 +5,9 @@ Tests for analyzer implementation module.
 from datetime import datetime
 from typing import Any
 
-import pytest
-from analyzer import EmailAnalysisResult, EmailAnalyzer
 from interface import Message
+
+from analyzer import EmailAnalysisResult, EmailAnalyzer
 
 
 class MockMessage(Message):
@@ -73,7 +73,7 @@ class MockMessage(Message):
 def test_email_analysis_result_init():
     """Test EmailAnalysisResult initialization and default values."""
     result = EmailAnalysisResult()
-    
+
     assert result.sentiment is None
     assert result.topics == []
     assert result.entities == []
@@ -90,9 +90,9 @@ def test_email_analysis_result_with_values():
         _entities=["John", "Project X"],
         _summary="Meeting summary",
         _confidence=0.9,
-        _metadata={"key": "value"}
+        _metadata={"key": "value"},
     )
-    
+
     assert result.sentiment == 0.5
     assert result.topics == ["business", "meeting"]
     assert result.entities == ["John", "Project X"]
@@ -108,11 +108,11 @@ def test_email_analyzer_single_message():
         msg_id="123",
         subject="Test Meeting",
         body="Let's discuss the project tomorrow.",
-        date=datetime.now()
+        date=datetime.now(),
     )
-    
+
     result = analyzer.analyze(message)
-    
+
     assert isinstance(result, EmailAnalysisResult)
     assert isinstance(result.sentiment, float)
     assert isinstance(result.topics, list)
@@ -132,18 +132,18 @@ def test_email_analyzer_conversation():
             msg_id="1",
             subject="Meeting",
             body="Can we meet tomorrow?",
-            date=datetime(2025, 8, 1, 10, 0)
+            date=datetime(2025, 8, 1, 10, 0),
         ),
         MockMessage(
             msg_id="2",
             subject="Re: Meeting",
             body="Yes, that works for me.",
-            date=datetime(2025, 8, 1, 11, 0)
-        )
+            date=datetime(2025, 8, 1, 11, 0),
+        ),
     ]
-    
+
     result = analyzer.analyze_conversation(messages)
-    
+
     assert isinstance(result, EmailAnalysisResult)
     assert result.metadata["message_count"] == 2
     assert "date_range" in result.metadata
@@ -157,11 +157,11 @@ def test_email_analyzer_get_insights():
     results = [
         EmailAnalysisResult(_sentiment=0.5, _confidence=0.8),
         EmailAnalysisResult(_sentiment=0.7, _confidence=0.9),
-        EmailAnalysisResult(_sentiment=0.3, _confidence=0.7)
+        EmailAnalysisResult(_sentiment=0.3, _confidence=0.7),
     ]
-    
+
     insights = analyzer.get_insights(results)
-    
+
     assert "average_sentiment" in insights
     assert "common_topics" in insights
     assert "total_analyzed" in insights
@@ -175,7 +175,7 @@ def test_email_analyzer_get_insights_empty():
     """Test EmailAnalyzer.get_insights with empty results list."""
     analyzer = EmailAnalyzer()
     insights = analyzer.get_insights([])
-    
+
     assert "error" in insights
     assert insights["error"] == "No analysis results provided"
 
@@ -185,13 +185,10 @@ def test_email_analyzer_summary_truncation():
     analyzer = EmailAnalyzer()
     long_body = "x" * 300  # Create a string longer than 200 characters
     message = MockMessage(
-        msg_id="123",
-        subject="Test",
-        body=long_body,
-        date=datetime.now()
+        msg_id="123", subject="Test", body=long_body, date=datetime.now()
     )
-    
+
     result = analyzer.analyze(message)
-    
+
     assert len(result.summary) < len(long_body)
     assert result.summary.endswith("...")
