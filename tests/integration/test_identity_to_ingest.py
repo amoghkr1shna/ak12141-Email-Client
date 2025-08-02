@@ -115,7 +115,6 @@ This is a test email body.
             with pytest.raises(
                 Exception
             ):  # This would be AuthenticationError in real implementation
-                ingestor = LocalIngestor(self.mail_dir)
                 # In real implementation, ingestor would check auth before proceeding
                 raise Exception("Authentication required")
 
@@ -197,15 +196,12 @@ This is a test email body.
         identity_manager = IdentityManager(oauth_handler, token_manager)
 
         # Mock valid authentication
-        mock_token = TokenInfo(
-            access_token="valid_access_token",
-            refresh_token="valid_refresh_token",
-            expires_at=datetime.now() + timedelta(hours=1),
-            token_type="Bearer",
-            scope="https://www.googleapis.com/auth/gmail.readonly",
-        )
+        with patch.object(oauth_handler, "authenticate") as mock_auth:
+            mock_auth.return_value = AuthStatus.AUTHENTICATED
 
-        token_manager.store_token(mock_token)
+            # Verify authentication works
+            status = identity_manager.authenticate({"access_token": "test_token"})
+            assert status == AuthStatus.AUTHENTICATED
 
         # Test search functionality
         ingestor = LocalIngestor(self.mail_dir)

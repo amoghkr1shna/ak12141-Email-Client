@@ -495,6 +495,11 @@ Project Manager
                 analysis = self.analyzer.analyze(std_msg)
                 processed_count += 1
 
+                # Use the analysis result
+                assert analysis.sentiment is not None
+                assert analysis.topics is not None
+                assert analysis.entities is not None
+
         # Step 3: Record end time
         end_time = time.time()
         processing_time = end_time - start_time
