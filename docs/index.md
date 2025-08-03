@@ -42,8 +42,7 @@ KYMail is designed around a pipeline flow: **Identity → Ingest → Message →
 | [Architecture](architecture.md) | System design, features, and API reference |
 | [Setup](setup.md) | Installation, development setup, and CI/CD |
 | [Usage](usage.md) | Code examples and integration patterns |
-| [Component Specs](component.md) | Component structure and requirements |
-| [PR Template](pull_request_template.md) | Contribution guidelines |
+
 
 ---
 
