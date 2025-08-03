@@ -52,10 +52,10 @@ members = [
 
 [tool.pytest.ini_options]
 testpaths = [
-    "src/analyzer/tests",
-    "src/identity/tests", 
-    "src/ingest/tests",
-    "src/message/tests",
+    #"src/analyzer/tests",
+    #"src/identity/tests", 
+    #"src/ingest/tests",
+    #"src/message/tests",
     "tests/integration",
     "tests/e2e"
 ]

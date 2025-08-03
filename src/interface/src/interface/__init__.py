@@ -18,14 +18,18 @@ class AuthStatus(Enum):
     UNAUTHENTICATED = "unauthenticated"
     EXPIRED = "expired"
     REFRESHING = "refreshing"
+    FAILED = "failed"  # Add FAILED status
 
 
 @dataclass
 class TokenInfo:
+    """OAuth token information."""
+
     access_token: str
     refresh_token: str | None = None
-    expires_at: int | None = None
+    expires_at: float | None = None  # Change to float for timestamp
     token_type: str = "Bearer"
+    scope: str | None = None  # Add scope field
 
 
 class OAuthHandler(Protocol):

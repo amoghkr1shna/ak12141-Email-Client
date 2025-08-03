@@ -36,8 +36,8 @@ jobs:
       - run:
           name: Run tests with coverage
           command: |
-            uv run pytest --cov=src --cov-report=html --cov-report=xml --junitxml=test-results.xml
-      
+            PYTHONPATH=./src uv run pytest --cov=src --cov-report=html --cov-report=xml --junitxml=test-results.xml
+
       - run:
           name: Build documentation
           command: uv run mkdocs build

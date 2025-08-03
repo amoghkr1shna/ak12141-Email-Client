@@ -233,11 +233,17 @@ class IdentityManager:
         self.token_manager.clear_token()
 
     def is_authenticated(self) -> bool:
-        """Check if user is authenticated."""
-        token = self.get_stored_token()
-        if token:
-            return self.oauth_handler.validate_token(token)
-        return False
+        """Check if user is currently authenticated with a valid token."""
+        stored_token = self.get_stored_token()
+        if stored_token is None:
+            return False
+
+        # Check if token is expired first (cheaper check)
+        if self.token_manager.is_token_expired(stored_token):
+            return False
+
+        # Validate token with OAuth provider
+        return self.oauth_handler.validate_token(stored_token)
 
 
 # Factory functions

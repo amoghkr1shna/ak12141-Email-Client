@@ -5,7 +5,7 @@ Pipeline flow: Identity → Ingest → Message → Analyzer
 """
 
 import tempfile
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from unittest.mock import patch
 
@@ -64,12 +64,16 @@ class TestFullPipeline:
         valid_token = TokenInfo(
             access_token="valid_access_token_12345",
             refresh_token="valid_refresh_token_67890",
-            expires_at=datetime.now().timestamp() + 3600,  # Expires in 1 hour
+            expires_at=(
+                datetime.now() + timedelta(hours=1)
+            ).timestamp(),  # Use timestamp
             token_type="Bearer",
             scope="https://www.googleapis.com/auth/gmail.readonly",
         )
 
+        # Store the token to simulate authentication
         token_manager.store_token(valid_token)
+
         return IdentityManager(oauth_handler, token_manager)
 
     def _create_sample_emails(self):
@@ -255,46 +259,53 @@ Project Manager
 
     def test_authenticated_email_search_and_analysis(self):
         """Test searching emails with authentication and analyzing results."""
-        # Step 1: Verify authentication
-        assert self.identity_manager.is_authenticated()
+        # Step 1: Verify authentication - mock validate_token for testing
+        with patch.object(
+            self.identity_manager.oauth_handler, "validate_token", return_value=True
+        ):
+            assert self.identity_manager.is_authenticated()
 
-        # Step 2: Search for specific emails
-        business_emails = list(
-            self.ingestor.search_messages("quarterly", folder="INBOX")
-        )
-        tech_emails = list(self.ingestor.search_messages("deployment", folder="INBOX"))
-        support_emails = list(self.ingestor.search_messages("resolved", folder="INBOX"))
-
-        assert len(business_emails) > 0
-        assert len(tech_emails) > 0
-        assert len(support_emails) > 0
-
-        # Step 3: Create message summaries
-        search_summaries = []
-        all_search_results = business_emails + tech_emails + support_emails
-
-        for result in all_search_results:
-            summary = create_message(
-                msg_id=f"summary_{result.id}",
-                from_addr="system@emailclient.com",
-                to_addr="user@company.com",
-                date=datetime.now(),
-                subject=f"SUMMARY: {result.subject}",
-                body=f"Original from: {result.from_}\nOriginal date: {result.date}\nSummary: {result.body[:100]}...",
+            # Step 2: Search for specific emails
+            business_emails = list(
+                self.ingestor.search_messages("quarterly", folder="INBOX")
             )
-            search_summaries.append(summary)
+            tech_emails = list(
+                self.ingestor.search_messages("deployment", folder="INBOX")
+            )
+            support_emails = list(
+                self.ingestor.search_messages("resolved", folder="INBOX")
+            )
 
-        # Step 4: Analyze summaries
-        summary_analyses = []
-        for summary in search_summaries:
-            analysis = self.analyzer.analyze(summary)
-            summary_analyses.append(analysis)
+            assert len(business_emails) > 0
+            assert len(tech_emails) > 0
+            assert len(support_emails) > 0
 
-        # Step 5: Generate search insights
-        search_insights = self.analyzer.get_insights(summary_analyses)
+            # Step 3: Create message summaries
+            search_summaries = []
+            all_search_results = business_emails + tech_emails + support_emails
 
-        assert search_insights["total_analyzed"] == len(search_summaries)
-        assert isinstance(search_insights["average_sentiment"], float)
+            for result in all_search_results:
+                summary = create_message(
+                    msg_id=f"summary_{result.id}",
+                    from_addr="system@emailclient.com",
+                    to_addr="user@company.com",
+                    date=datetime.now(),
+                    subject=f"SUMMARY: {result.subject}",
+                    body=f"Original from: {result.from_}\nOriginal date: {result.date}\nSummary: {result.body[:100]}...",
+                )
+                search_summaries.append(summary)
+
+            # Step 4: Analyze summaries
+            summary_analyses = []
+            for summary in search_summaries:
+                analysis = self.analyzer.analyze(summary)
+                summary_analyses.append(analysis)
+
+            # Step 5: Generate search insights
+            search_insights = self.analyzer.get_insights(summary_analyses)
+
+            assert search_insights["total_analyzed"] == len(search_summaries)
+            assert isinstance(search_insights["average_sentiment"], float)
 
     def test_conversation_thread_analysis(self):
         """Test analyzing conversation threads across the pipeline."""

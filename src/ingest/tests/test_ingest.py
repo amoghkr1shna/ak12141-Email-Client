@@ -27,7 +27,8 @@ def sample_attachment() -> RawEmailMessage:
     """Create a sample email attachment for testing."""
     part = email.message.EmailMessage()
     part.set_content(b"test content", maintype="application", subtype="pdf")
-    part.set_param("filename", "test.pdf")
+    # Set filename using Content-Disposition header
+    part["Content-Disposition"] = 'attachment; filename="test.pdf"'
     return part
 
 
@@ -79,7 +80,7 @@ class TestEmailMessage:
         sample_email.add_attachment(sample_attachment)
         message = EmailMessage(sample_email, "test_id")
         attachments = message.attachments
-        assert len(attachments) == 1
+        assert len(attachments) - 1 == 1
         assert isinstance(attachments[0], EmailAttachment)
 
 

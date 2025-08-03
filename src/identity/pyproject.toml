@@ -27,6 +27,8 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+# Add this to prevent conflicts when running from workspace root
+addopts = "--import-mode=importlib"
 
 [tool.mypy]
 python_version = "3.10"

@@ -60,7 +60,9 @@ This is a test email body.
         mock_token = TokenInfo(
             access_token="mock_access_token",
             refresh_token="mock_refresh_token",
-            expires_at=datetime.now() + timedelta(hours=1),
+            expires_at=(
+                datetime.now() + timedelta(hours=1)
+            ).timestamp(),  # Use timestamp
             token_type="Bearer",
             scope="https://www.googleapis.com/auth/gmail.readonly",
         )
@@ -133,7 +135,9 @@ This is a test email body.
         expired_token = TokenInfo(
             access_token="expired_access_token",
             refresh_token="valid_refresh_token",
-            expires_at=datetime.now() - timedelta(hours=1),  # Expired
+            expires_at=(
+                datetime.now() - timedelta(hours=1)
+            ).timestamp(),  # Use timestamp
             token_type="Bearer",
             scope="https://www.googleapis.com/auth/gmail.readonly",
         )
@@ -144,7 +148,9 @@ This is a test email body.
         new_token = TokenInfo(
             access_token="new_access_token",
             refresh_token="valid_refresh_token",
-            expires_at=datetime.now() + timedelta(hours=1),
+            expires_at=(
+                datetime.now() + timedelta(hours=1)
+            ).timestamp(),  # Use timestamp
             token_type="Bearer",
             scope="https://www.googleapis.com/auth/gmail.readonly",
         )
@@ -228,12 +234,16 @@ This is a test email body.
         mock_token = TokenInfo(
             access_token="valid_access_token",
             refresh_token="valid_refresh_token",
-            expires_at=datetime.now() + timedelta(hours=1),
+            expires_at=(
+                datetime.now() + timedelta(hours=1)
+            ).timestamp(),  # Use timestamp
             token_type="Bearer",
             scope="https://www.googleapis.com/auth/gmail.readonly",
         )
 
-        identity_manager._token_manager.store_token(mock_token)
+        identity_manager.token_manager.store_token(
+            mock_token
+        )  # Fix: use token_manager not _token_manager
 
         # Test folder access
         ingestor = LocalIngestor(self.mail_dir)
