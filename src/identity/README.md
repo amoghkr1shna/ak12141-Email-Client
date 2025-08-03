@@ -10,6 +10,23 @@ This module provides OAuth authentication and token management functionality for
 - Token validation and expiration handling
 - Factory functions for creating identity components
 
+## Scope
+
+### What This Component Provides
+- **OAuth 2.0 Authentication**: Complete Gmail OAuth flow with PKCE support
+- **Token Lifecycle Management**: Secure storage, retrieval, refresh, and validation of access tokens
+- **Authentication State Tracking**: Persistent session management across application restarts
+- **Credential Abstraction**: Provider-agnostic interface for multiple email service integrations
+- **Security Compliance**: Industry-standard authentication patterns with secure token handling
+
+### What This Component Doesn't Do
+- **Email Data Access**: Does not fetch, parse, or manipulate email content
+- **User Interface**: No authentication UI - provides programmatic flows only
+- **Multi-User Support**: Designed for single-user scenarios (no user account management)
+- **Custom Authentication**: Does not support proprietary or non-OAuth authentication schemes
+- **Token Persistence**: Uses in-memory storage only (no database or file system persistence)
+- **Network Configuration**: Does not handle proxy settings, SSL configuration, or network policies
+
 ## Classes
 
 - `IdentityManager`: Main coordinator for OAuth and token management
@@ -32,8 +49,8 @@ from identity import create_identity_manager
 # Create identity manager for Gmail
 identity_manager = create_identity_manager(
     provider="gmail",
-    client_id="your_client_id",
-    client_secret="your_client_secret",
+    client_id="your-gmail-client-id.googleusercontent.com",
+    client_secret="your-client-secret", 
     redirect_uri="http://localhost:8080/callback"
 )
 ```

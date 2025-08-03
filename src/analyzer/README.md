@@ -12,6 +12,20 @@ This module provides semantic analysis and metadata extraction functionality for
 - Insights generation from multiple analysis results
 - Comprehensive metadata collection
 
+## Scope
+
+### What It Does
+- Analyzes email message content for sentiment, topics, and named entities
+- Generates summaries and metadata for structured analysis
+- Supports multi-message (thread) and aggregate (batch) analysis
+- Provides insight generation from multiple results
+
+### What It Does Not Do
+- Does not fetch or ingest email content (handled by `ingest`)
+- Does not handle authentication or identity
+- Does not provide UI/visualization
+- Does not persist results (storage must be handled externally)
+
 ## Classes
 
 - `EmailAnalyzer`: Main analyzer implementation for processing email messages

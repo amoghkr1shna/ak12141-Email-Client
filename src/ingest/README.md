@@ -11,6 +11,25 @@ This module provides email fetching and parsing functionality for the email clie
 - Multi-folder support (INBOX, Sent, Drafts, etc.)
 - Factory functions for creating ingestor instances
 
+## Scope
+
+### What This Component Provides
+- **Multi-Format Email Ingestion**: Maildir, mbox, and future format support through pluggable architecture
+- **Structured Message Extraction**: Parsing email headers, body content, and attachments into typed objects
+- **Folder Organization**: Support for INBOX, Sent, Drafts, and custom folder hierarchies
+- **Search Capabilities**: Content-based search across subjects, bodies, and metadata
+- **Streaming Access**: Memory-efficient iteration over large email collections
+- **Attachment Processing**: Extraction and typing of binary attachments with content detection
+
+### What This Component Doesn't Do
+- **Authentication Management**: Relies on Identity component for credential handling
+- **Message Modification**: Read-only access - does not alter, move, or delete emails
+- **Remote Email Fetching**: Operates on local email stores only (no IMAP/POP3 connectivity)
+- **Email Storage Format Conversion**: Does not transform between storage formats
+- **Content Analysis**: Raw content extraction only - no semantic analysis or processing
+- **Real-time Synchronization**: Snapshot-based access without live email monitoring
+- **Email Composition**: Does not create, send, or modify email content
+
 ## Classes
 
 - `LocalIngestor`: File-based implementation for reading emails from local directories
