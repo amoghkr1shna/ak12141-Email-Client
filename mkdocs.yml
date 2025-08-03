@@ -32,11 +32,7 @@ nav:
   - Getting Started: setup.md
   - How It Works: usage.md
   - System Design: architecture.md
-  - Components:
-      - Identity: components/identity.md
-      - Ingest: components/ingest.md
-      - Message: components/message.md
-      - Analyzer: components/analyzer.md
+
 
 markdown_extensions:
   - admonition
