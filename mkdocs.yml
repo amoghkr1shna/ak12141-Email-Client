@@ -1,6 +1,52 @@
-site_name: ak12141 Email Client
-site_url: https://ak12141-email-client.readthedocs.io/
-nav:
-  - Home: index.md
+site_name: KYMail – Intelligent Mail System  
+site_description: Modular, protocol-driven mail client showcasing clean software design  
+site_author: NYU Graduate Student  
+
 theme:
-  name: material  # Optional: "mkdocs" is default
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: deep orange
+      toggle:
+        icon: material/weather-sunny
+        name: Dark mode
+    - scheme: slate
+      primary: indigo
+      accent: deep orange
+      toggle:
+        icon: material/weather-night
+        name: Light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - content.code.annotate
+    - content.code.copy
+    - search.suggest
+    - search.highlight
+
+nav:
+  - Overview: index.md
+  - Getting Started: setup.md
+  - How It Works: usage.md
+  - System Design: architecture.md
+  - Components:
+      - Identity: components/identity.md
+      - Ingest: components/ingest.md
+      - Message: components/message.md
+      - Analyzer: components/analyzer.md
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true
+
+plugins:
+  - search

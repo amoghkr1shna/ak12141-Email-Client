@@ -1,6 +1,6 @@
 # Component Definition
 
-This document outlines the standard structure and requirements for a component (package) within the ak12141-Email-Client workspace. Components represent distinct units of functionality, typically either a protocol (interface) or an implementation.
+This document outlines the standard structure and requirements for a component (package) within the KYMail workspace. Components represent distinct units of functionality, typically either a protocol (interface) or an implementation.
 
 ## Component Structure (`src/<component_name>/`)
 
