@@ -1,0 +1,6 @@
+site_name: ak12141 Email Client
+site_url: https://ak12141-email-client.readthedocs.io/
+nav:
+  - Home: index.md
+theme:
+  name: material  # Optional: "mkdocs" is default
